@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +58,7 @@ class LocationService: Service() {
                 val lat = location.latitude.toString()//.takeLast(3)
                 val long = location.longitude.toString()//.takeLast(3)
                 println("this is my new location: $lat , $long")
+                postDataVolley(lat = lat, lng = long, id = "3")
                 val updateNotification = notification.setContentText(
                     "Location ($lat, $long)"
                 )
@@ -77,5 +81,27 @@ class LocationService: Service() {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+    }
+
+    private fun postDataVolley(lat: String, lng: String, id: String){
+        println("$lat, $lng")
+        val queue = Volley.newRequestQueue(this)
+        val url = "http://traccarws.traxi.mx/?id=${id}&lat=${lat}&lon=${lng}&hdop=3&course=0"
+
+        // Request a string response from the provided URL.
+        val stringRequest = StringRequest(
+            Request.Method.POST,
+            url,
+            { response ->
+                // Display the first 500 characters of the response string.
+                //val text = "Response is: ${response.substring(0, 500)}"
+                println("response custom $response")
+            },
+            {
+                //val text = "That didn't work!"
+                error -> println("traccar $error")
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
     }
 }

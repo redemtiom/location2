@@ -40,6 +40,7 @@ class DefaultLocationClient(
                 .create()
                 .setInterval(interval)
                 .setFastestInterval(interval)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
             val locationCallback = object : LocationCallback(){
                 override fun onLocationResult(result: LocationResult) {
